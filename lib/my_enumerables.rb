@@ -9,71 +9,53 @@ module Enumerable
 
   def my_select
     arr = []
-    for i in 0..(self.length - 1)
-      result = yield self[i]
-      if result == true
-        arr << self[i]
-      end
-    end
-    return arr
+    self.my_each { |element| arr << element if yield(element) }
+    arr
   end
 
   def my_all?
     arr = []
-    for i in 0..(self.length - 1)
-      result = yield self[i]
-      if result == true
-        arr << self[i]
-      end
-    end
+    self.my_each { |element| arr << element if yield(element) }
     return false unless arr.length == self.length
-    return true
+
+    true
   end
 
   def my_any?
-    arr =[]
-    for i in 0..(self.length - 1)
-      if yield(self[i]) == true
-        arr << self[i]
-      end
-    end
+    arr = []
+    self.my_each { |element| arr << element if yield(element) }
     return false unless arr.length > 0
-    return true
+
+    true
   end
 
   def my_none?
     arr =[]
-    for i in 0..(self.length - 1)
-      if yield(self[i]) == true
-        arr << self[i]
-      end
-    end
-    return true unless arr.length > 0
-    return false
+    self.my_each { |element| arr << element if yield(element) }
+    return true unless arr.length.positive?
+
+    false
   end
 
   def my_count
     total = 0
     if block_given?
-      for i in 0..(self.length - 1)
-        total += 1 if yield(self[i]) == true
-      end
+      self.my_each { |element| total += 1 if yield(element) }
     else
-      # block = Proc.new {|element| total += 1}
-      self.my_each {|element| total += 1}
+      self.my_each { total += 1 }
     end
-    return total
+    total
   end
 
   def my_map
     arr = []
-    self.each {|element| arr << yield(element)}
-    return arr
+    self.my_each { |element| arr << yield(element) }
+    arr
   end
 
   def my_inject(arg = 0)
     total = arg
-    self.my_each {|element| total = yield(total, element)}
+    self.my_each { |element| total = yield(total, element) }
     total
   end
 end
